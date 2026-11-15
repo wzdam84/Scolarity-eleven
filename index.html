@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scolarity Eleven</title>
+<style>
+:root{--bg:#100b1d;--panel:#211638;--panel2:#2c1d47;--purple:#9b6cff;--pink:#d18bff;--text:#f7f1ff;--muted:#c1b3d8;--line:#493365;--good:#82e0b1;--bad:#ff8caa}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#352052 0%,#171025 48%,#0e0a17 100%);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,sans-serif;min-height:100vh}
+main{width:min(760px,100%);margin:auto;padding:22px 16px 40px}
+header{text-align:center;padding:16px 8px 22px}
+.logo{font-size:clamp(30px,8vw,46px);font-weight:900;letter-spacing:-1.5px;background:linear-gradient(90deg,#c8a6ff,#f0c4ff);-webkit-background-clip:text;color:transparent}
+.tag{color:var(--muted);font-size:14px;margin-top:4px}
+.panel{background:linear-gradient(145deg,rgba(47,31,72,.97),rgba(29,20,46,.98));border:1px solid var(--line);border-radius:24px;padding:22px;box-shadow:0 16px 40px #08051066;margin-bottom:16px}
+h1,h2,h3,p{margin-top:0}h2{font-size:23px;margin-bottom:8px}p{line-height:1.5;color:var(--muted)}
+button{font:inherit;cursor:pointer}
+.primary,.choice,.origin{width:100%;border:0;border-radius:17px;padding:17px 18px;font-size:17px;font-weight:800;min-height:60px;color:white;background:linear-gradient(100deg,#8553e8,#b36cf4);box-shadow:0 6px 18px #07040d55;transition:transform .12s,filter .12s;text-align:left}
+.primary{text-align:center;margin-top:10px}
+button:active{transform:scale(.985);filter:brightness(1.12)}
+.origin{background:#34244d;border:1px solid #624889;margin:8px 0;display:flex;align-items:center;justify-content:space-between}
+.origin small{display:block;color:#d4c5e8;font-size:13px;font-weight:500;margin-top:3px}
+.choice{margin:9px 0;background:#382653;border:1px solid #67478d}
+.choice:hover,.origin:hover{background:#49316b}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}
+.stat{background:#211632;border:1px solid #493365;border-radius:16px;padding:12px 14px}
+.stat-top{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:var(--muted);font-weight:700}
+.stat strong{font-size:22px;color:#fff}
+.track{height:7px;border-radius:9px;background:#120d1d;margin-top:7px;overflow:hidden}
+.fill{height:100%;border-radius:9px;background:linear-gradient(90deg,#8b5be9,#d18bff)}
+.pill{display:inline-block;border-radius:99px;padding:6px 11px;background:#3a2855;color:#e6d7ff;font-size:12px;font-weight:800}
+.identity{display:flex;align-items:center;gap:15px;margin:14px 0}
+.avatar{width:78px;height:78px;flex:0 0 78px;border-radius:22px;background:linear-gradient(145deg,#b58aff,#54328a);display:grid;place-items:center;font-size:43px;border:2px solid #d1b2ff}
+.name{font-size:22px;font-weight:900}
+.meta{font-size:13px;color:var(--muted)}
+.event{font-size:22px;line-height:1.3;font-weight:850;margin:14px 0}
+.feedback{border-radius:15px;padding:14px;background:#1a2e2a;border:1px solid #356c59;color:#d9ffec;margin-top:12px}
+.feedback.bad{background:#351d2a;border-color:#704056;color:#ffe0e9}
+.feedback b{display:block;margin-bottom:5px}
+.hidden{display:none!important}
+.footer{text-align:center;color:#8f7ca8;font-size:12px;padding:12px}
+@media(min-width:600px){main{padding-top:30px}.panel{padding:28px}.stats{grid-template-columns:repeat(4,minmax(0,1fr))}.stat{padding:12px}}
+</style>
+</head>
+<body>
+<main>
+<header><div class="logo">SCOLARITY ELEVEN</div><div class="tag">Une nouvelle vie scolaire commence ici</div></header>
+
+<section id="start" class="panel">
+  <span class="pill">NOUVELLE CARRIÈRE · ÉTAPE 1 SUR 2</span>
+  <h2 style="margin-top:14px">D'abord, choisis ta famille</h2>
+  <p>Le milieu dans lequel tu grandis influence ton argent de poche et les possibilités au départ.</p>
+  <div id="familyChoices">
+    <button class="origin" data-family="Famille aisée"><span>Famille aisée<small>Plus de moyens et un quotidien confortable</small></span><span>✦</span></button>
+    <button class="origin" data-family="Famille modeste"><span>Famille modeste<small>Un budget limité, mais stable</small></span><span>◆</span></button>
+    <button class="origin" data-family="Famille pauvre"><span>Famille pauvre<small>Peu de moyens : chaque occasion compte</small></span><span>◇</span></button>
+  </div>
+  <div id="schoolStep" class="hidden">
+    <div class="pill" style="margin-top:20px">ÉTAPE 2 SUR 2</div>
+    <h2 style="margin-top:14px">Dans quelle école commences-tu ?</h2>
+    <p id="familyChosen"></p>
+    <div id="schoolChoices">
+      <button class="origin" data-school="École modeste"><span>École modeste<small>Peu de moyens, ambiance plus simple</small></span><span>◇</span></button>
+      <button class="origin" data-school="École classique"><span>École classique<small>Un établissement équilibré</small></span><span>◆</span></button>
+      <button class="origin" data-school="École réputée"><span>École réputée<small>Un bon niveau et des attentes élevées</small></span><span>★</span></button>
+      <button class="origin" data-school="Grande école prestigieuse"><span>Grande école prestigieuse<small>Excellente réputation, forte exigence</small></span><span>✦</span></button>
+    </div>
+    <button class="primary" id="backFamily" style="background:#49365f">← Changer de famille</button>
+  </div>
+</section>
+
+<section id="game" class="hidden">
+  <div class="panel">
+    <div class="pill" id="day">JOUR 1 / 12</div>
+    <div class="identity"><div class="avatar" id="avatar">🙂</div><div><div class="name" id="studentName"></div><div class="meta" id="studentMeta"></div></div></div>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="panel">
+    <div class="pill">ÉVÉNEMENT DU JOUR</div>
+    <div class="event" id="eventTitle"></div>
+    <p id="eventText"></p>
+    <div id="choices"></div>
+    <div id="feedback" class="hidden"></div>
+    <button id="next" class="primary hidden">Continuer →</button>
+  </div>
+</section>
+
+<section id="end" class="panel hidden">
+  <span class="pill">FIN DE CARRIÈRE</span>
+  <h2 id="endTitle">Ton année est terminée</h2>
+  <p id="endText"></p>
+  <div class="stats" id="finalStats"></div>
+  <button class="primary" id="restart">Recommencer une carrière</button>
+</section>
+<div class="footer">Scolarity Eleven · Version 5</div>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const firstNames=["Lina","Inès","Jade","Camille","Sarah","Maya","Léa","Nora","Adam","Noah","Yanis","Lucas","Ethan","Amir","Hugo","Ilyes","Sacha","Enzo","Milan","Gabriel","Aya","Zoé","Mila","Nina","Naël","Rayan"];
+const lastNames=["Martin","Bernard","Diallo","Moreau","Petit","Robert","Laurent","Simon","Michel","Garcia","Roux","Fournier","Lopez","Sanchez","Ndiaye","Benali","Leroy","Fontaine","Garnier","Chevalier"];
+const faces=["🙂","😎","🧑🏽‍🎓","👩🏻‍🎓","🧑🏾‍🎓","👩🏽‍🎓","🧑🏻‍🎓","👩🏾‍🎓","🧑🏼‍🎓","👩🏼‍🎓"];
+const events=[
+["Premier jour","Tu arrives dans ta nouvelle classe. Quelques élèves discutent déjà entre eux.","Aller parler à un groupe","Rester tranquille et observer","Aider quelqu'un à trouver sa salle"],
+["Un contrôle surprise","Le professeur annonce un petit contrôle que personne n'avait prévu.","Tenter le contrôle sérieusement","Faire au mieux sans trop stresser","Demander calmement une explication"],
+["Pause déjeuner","À la cantine, tu remarques une table où l'ambiance semble sympa.","Rejoindre la table","Déjeuner au calme","Partager ton dessert avec quelqu'un"],
+["Travail en groupe","Un projet doit être préparé à plusieurs pour la semaine prochaine.","Prendre les choses en main","Proposer une idée originale","Laisser chacun choisir sa tâche"],
+["Une invitation","Des élèves te proposent de sortir après les cours.","Accepter l'invitation","Rentrer pour te reposer","Proposer une activité moins chère"],
+["Devoir oublié","Tu réalises que tu as oublié de terminer un devoir important.","Le finir rapidement","Expliquer honnêtement la situation","Demander un délai"],
+["Rumeur dans la classe","Une rumeur circule et plusieurs élèves veulent ton avis.","Ne pas la relayer","Prendre la défense de la personne visée","Changer de sujet"],
+["Journée fatigante","Tu as mal dormi et la journée semble interminable.","Te concentrer malgré tout","Faire une vraie pause","Demander un peu d'aide"],
+["Bonne note","Tu reçois une note meilleure que prévu.","Fêter ça avec tes amis","Continuer à travailler","Encourager un camarade"],
+["Sortie scolaire","La classe prépare une sortie qui coûte un peu d'argent.","Participer à la sortie","Économiser ton argent","Chercher une réduction ou une aide"],
+["Conflit","Deux élèves se disputent et te demandent de prendre parti.","Essayer de calmer la situation","Ne pas t'en mêler","Écouter les deux côtés"],
+["Dernière ligne droite","La fin de la période approche. Tu peux encore faire évoluer ton année.","Réviser sérieusement","Profiter d'un moment avec tes amis","Te reposer pour repartir en forme"]
+];
+let state={},day=0,chosenOrigin="";
+const clamp=n=>Math.max(0,Math.min(100,n));
+let selectedFamily="";
+function startCareer(family,school){
+ chosenOrigin=family+" · "+school;day=0;
+ let familyBonus={popularite:0,moyenne:0,energie:0,argent:0};
+ if(family==="Famille aisée")familyBonus={popularite:3,moyenne:1,energie:0,argent:45};
+ if(family==="Famille modeste")familyBonus={popularite:0,moyenne:0,energie:0,argent:20};
+ if(family==="Famille pauvre")familyBonus={popularite:-2,moyenne:-1,energie:-2,argent:5};
+ let schoolBonus={popularite:0,moyenne:0,energie:0,argent:0};
+ if(school==="École modeste")schoolBonus={popularite:0,moyenne:-1,energie:3,argent:0};
+ if(school==="École classique")schoolBonus={popularite:0,moyenne:2,energie:0,argent:0};
+ if(school==="École réputée")schoolBonus={popularite:2,moyenne:6,energie:-3,argent:0};
+ if(school==="Grande école prestigieuse")schoolBonus={popularite:4,moyenne:9,energie:-8,argent:0};
+ state={popularite:clamp(35+familyBonus.popularite+schoolBonus.popularite),
+ moyenne:clamp(50+familyBonus.moyenne+schoolBonus.moyenne),
+ energie:clamp(75+familyBonus.energie+schoolBonus.energie),
+ argent:Math.max(0,25+familyBonus.argent+schoolBonus.argent),
+ name:firstNames[Math.random()*firstNames.length|0]+" "+lastNames[Math.random()*lastNames.length|0],
+ face:faces[Math.random()*faces.length|0]};
+ $("start").classList.add("hidden");$("end").classList.add("hidden");$("game").classList.remove("hidden");
+ $("studentName").textContent=state.name;$("avatar").textContent=state.face;
+ $("studentMeta").textContent="12 ans · 6e · "+family+" · "+school;
+ render();
+}
+function render(){
+ $("day").textContent=`JOUR ${day+1} / ${events.length}`;
+ $("stats").innerHTML=[
+ ["Popularité",state.popularite,"%"],["Moyenne générale",state.moyenne,"%"],["Énergie",state.energie,"%"],["Argent de poche",state.argent,"€"]
+ ].map(([n,v,u])=>`<div class="stat"><div class="stat-top"><span>${n}</span><strong>${Math.round(v)}${u}</strong></div><div class="track"><div class="fill" style="width:${clamp(v)}%"></div></div></div>`).join("");
+ const e=events[day];$("eventTitle").textContent=e[0];$("eventText").textContent=e[1];
+ $("feedback").className="hidden";$("next").classList.add("hidden");
+ $("choices").innerHTML=e.slice(2).map((c,i)=>`<button class="choice" data-choice="${i}">${c} <span style="float:right">›</span></button>`).join("");
+ document.querySelectorAll(".choice").forEach(b=>b.onclick=()=>choose(+b.dataset.choice));
+}
+function choose(i){
+ const outcomes=[
+  [{p:8,m:1,e:-5,a:-2},{p:-1,m:2,e:3,a:0},{p:5,m:0,e:-2,a:1}],
+  [{p:-1,m:9,e:-7,a:0},{p:1,m:3,e:0,a:0},{p:3,m:2,e:-2,a:0}],
+  [{p:8,m:0,e:-3,a:-4},{p:0,m:1,e:5,a:0},{p:6,m:0,e:-2,a:-2}],
+  [{p:4,m:5,e:-6,a:0},{p:6,m:2,e:-4,a:-2},{p:2,m:3,e:0,a:0}]
+ ];
+ let base=outcomes[day%outcomes.length][i];
+ // Une décision peut avoir un résultat différent à chaque carrière.
+ let swing=()=>Math.floor(Math.random()*7)-3;
+ let delta={p:base.p+swing(),m:base.m+swing(),e:base.e+swing(),a:base.a+(Math.random()<.35?(Math.random()<.5?-3:3):0)};
+ // Des imprévus rendent les carrières moins prévisibles.
+ if(Math.random()<.22){let keys=["p","m","e","a"],k=keys[Math.random()*4|0];delta[k]+=Math.random()<.5?-7:7;}
+ state.popularite=clamp(state.popularite+delta.p);state.moyenne=clamp(state.moyenne+delta.m);
+ state.energie=clamp(state.energie+delta.e);state.argent=Math.max(0,state.argent+delta.a);
+ const lines=[["Popularité",delta.p,"%"],["Moyenne",delta.m,"%"],["Énergie",delta.e,"%"],["Argent",delta.a,"€"]];
+ let gains=lines.filter(x=>x[1]>0).map(x=>`${x[0]} +${x[1]}${x[2]}`);
+ let losses=lines.filter(x=>x[1]<0).map(x=>`${x[0]} ${x[1]}${x[2]}`);
+ let box=$("feedback");box.className="feedback "+(losses.length>gains.length?"bad":"");
+ box.innerHTML=`<b>${Math.random()<.5?"Voilà ce qui se passe…":"Les conséquences de ton choix"}</b>${gains.length?"<div>+ "+gains.join(" · + ")+"</div>":""}${losses.length?"<div style='margin-top:5px'>− "+losses.join(" · ")+"</div>":""}${!gains.length&&!losses.length?"Pas de changement important aujourd'hui.":""}`;
+ $("choices").innerHTML="";box.classList.remove("hidden");$("next").classList.remove("hidden");
+}
+$("next").onclick=()=>{day++;if(day>=events.length)finish();else render();};
+function finish(){
+ $("game").classList.add("hidden");$("end").classList.remove("hidden");
+ $("endTitle").textContent=state.moyenne>=70?"Une très belle année !":state.popularite>=65?"Tu t'es fait une belle place !":"Une année pleine d'expériences";
+ $("endText").textContent=`${state.name}, ton année de 6e est terminée. Chaque carrière est différente : recommence pour découvrir un autre parcours.`;
+ $("finalStats").innerHTML=[["Popularité",state.popularite,"%"],["Moyenne générale",state.moyenne,"%"],["Énergie",state.energie,"%"],["Argent de poche",state.argent,"€"]].map(([n,v,u])=>`<div class="stat"><div class="stat-top"><span>${n}</span><strong>${Math.round(v)}${u}</strong></div></div>`).join("");
+}
+document.querySelectorAll("[data-family]").forEach(b=>b.onclick=()=>{
+ selectedFamily=b.dataset.family;
+ $("familyChoices").classList.add("hidden");
+ $("schoolStep").classList.remove("hidden");
+ $("familyChosen").textContent="Famille choisie : "+selectedFamily+". Maintenant, choisis ton école.";
+});
+document.querySelectorAll("[data-school]").forEach(b=>b.onclick=()=>startCareer(selectedFamily,b.dataset.school));
+$("backFamily").onclick=()=>{
+ $("schoolStep").classList.add("hidden");
+ $("familyChoices").classList.remove("hidden");
+};
+$("restart").onclick=()=>{
+ $("end").classList.add("hidden");$("start").classList.remove("hidden");
+ $("schoolStep").classList.add("hidden");$("familyChoices").classList.remove("hidden");
+ selectedFamily="";
+};
+</script>
+</body>
+</html>
