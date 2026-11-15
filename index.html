@@ -1,0 +1,568 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scolarity Eleven</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ background:#f4edff;
+ color:#38284f;
+ font-family:Arial,sans-serif;
+}
+main{max-width:750px;margin:auto;padding:15px}
+header{
+ background:linear-gradient(120deg,#b99bea,#e7c9f2);
+ border-radius:22px;
+ padding:22px 15px;
+ text-align:center;
+ margin-bottom:15px;
+}
+h1{font-size:34px;margin:5px;color:#fff}
+header p{color:#fff;margin:5px}
+.card{
+ background:white;
+ border:2px solid #e7daf8;
+ border-radius:20px;
+ padding:18px;
+ margin-bottom:14px;
+}
+h2{font-size:23px;margin:0 0 14px}
+button{
+ width:100%;
+ border:0;
+ border-radius:15px;
+ padding:17px;
+ margin:7px 0;
+ font-size:18px;
+ font-weight:bold;
+ background:#956bc9;
+ color:white;
+ cursor:pointer;
+}
+button:disabled{opacity:.55}
+.choice{
+ background:#f1e8fc;
+ color:#49345f;
+ border:2px solid #e4d5f5;
+ text-align:left;
+}
+.choice:hover{background:#e8d9fa}
+.small{font-size:14px;color:#806c98;font-weight:normal}
+.stats{
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
+ gap:9px;
+}
+.stat{
+ background:#f8f3ff;
+ border-radius:15px;
+ padding:13px;
+ text-align:center;
+}
+.stat strong{
+ display:block;
+ color:#8559bb;
+ font-size:27px;
+}
+.stat span{font-size:14px}
+.topline{
+ display:flex;
+ justify-content:space-between;
+ gap:10px;
+ flex-wrap:wrap;
+ margin-bottom:12px;
+}
+.tag{
+ background:#eee3fa;
+ color:#704c9c;
+ border-radius:30px;
+ padding:8px 12px;
+ font-weight:bold;
+ font-size:14px;
+}
+.event-title{
+ font-size:25px;
+ color:#8054b5;
+ margin:12px 0;
+}
+.event-text{
+ font-size:19px;
+ line-height:1.5;
+}
+.feedback{
+ background:#f5edff;
+ border-radius:15px;
+ padding:15px;
+ margin-top:12px;
+ font-size:18px;
+}
+.hidden{display:none}
+.center{text-align:center}
+@media(max-width:420px){
+ main{padding:10px}
+ h1{font-size:29px}
+ .card{padding:14px}
+}
+</style>
+</head>
+<body>
+<main>
+
+<header>
+ <h1>🌸 SCOLARITY ELEVEN</h1>
+ <p>Construis ton avenir scolaire !</p>
+</header>
+
+<section id="setup" class="card">
+ <h2>🏡 Choisis ta famille</h2>
+
+ <button class="choice" onclick="family='aisée';selectFamily(this)">
+ 💎 Famille aisée
+ <div class="small">Plus d'argent de poche</div>
+ </button>
+
+ <button class="choice" onclick="family='modeste';selectFamily(this)">
+ 🏡 Famille modeste
+ <div class="small">Un départ équilibré</div>
+ </button>
+
+ <button class="choice" onclick="family='pauvre';selectFamily(this)">
+ 🌱 Famille pauvre
+ <div class="small">Un départ difficile</div>
+ </button>
+
+ <h2 style="margin-top:22px">🏫 Choisis ton établissement</h2>
+
+ <button class="choice" onclick="school='petit';selectSchool(this)">
+ 🏫 Petit lycée
+ <div class="small">Un établissement tranquille</div>
+ </button>
+
+ <button class="choice" onclick="school='classique';selectSchool(this)">
+ 📚 Lycée classique
+ <div class="small">Un établissement normal</div>
+ </button>
+
+ <button class="choice" onclick="school='réputé';selectSchool(this)">
+ ✨ Lycée réputé
+ <div class="small">Un niveau plus élevé</div>
+ </button>
+
+ <button class="choice" onclick="school='prestigieux';selectSchool(this)">
+ 👑 Grande école prestigieuse
+ <div class="small">Un établissement très exigeant</div>
+ </button>
+
+ <button onclick="startGame()">COMMENCER MA VIE SCOLAIRE →</button>
+</section>
+
+<section id="game" class="hidden">
+
+ <div class="card">
+  <div class="topline">
+   <span class="tag" id="year">Année 1</span>
+   <span class="tag" id="day">Jour 1</span>
+  </div>
+
+  <h2 id="student">Ton personnage</h2>
+
+  <div class="stats">
+   <div class="stat">
+    <strong id="pop">50</strong>
+    <span>❤️ Popularité</span>
+   </div>
+   <div class="stat">
+    <strong id="avg">10</strong>
+    <span>📚 Moyenne générale</span>
+   </div>
+   <div class="stat">
+    <strong id="energy">80</strong>
+    <span>⚡ Énergie</span>
+   </div>
+   <div class="stat">
+    <strong id="money">30 €</strong>
+    <span>💰 Argent de poche</span>
+   </div>
+  </div>
+ </div>
+
+ <div class="card">
+  <span class="tag" id="category">VIE SCOLAIRE</span>
+
+  <h2 class="event-title" id="eventTitle">
+   Bienvenue !
+  </h2>
+
+  <p class="event-text" id="eventText">
+   Ton aventure scolaire commence.
+  </p>
+
+  <div id="choices"></div>
+
+  <div id="feedback" class="feedback hidden"></div>
+
+  <button id="continue" class="hidden" onclick="nextEvent()">
+   CONTINUER →
+  </button>
+ </div>
+
+</section>
+
+<section id="ending" class="card center hidden">
+ <h2>🎓 Fin de ta scolarité !</h2>
+ <div id="award" class="event-title"></div>
+ <p id="finalText" class="event-text"></p>
+ <button onclick="location.reload()">COMMENCER UNE NOUVELLE VIE</button>
+</section>
+
+</main>
+
+<script>
+let family="modeste";
+let school="classique";
+
+let s={
+ pop:50,
+ avg:10,
+ energy:80,
+ money:30,
+ day:1,
+ year:1
+};
+
+let currentEvent=null;
+let previousEvent=-1;
+
+const names=[
+ "Lina Moreau","Adam Bernard",
+ "Inès Laurent","Noah Petit",
+ "Jade Robert","Léo Michel",
+ "Maya Simon","Ethan Garcia",
+ "Emma Dubois","Lucas Martin"
+];
+
+function selectFamily(btn){
+ document.querySelectorAll('#setup button.choice')
+ .forEach(b=>{if(b.textContent.includes('Famille'))b.style.borderColor='#e4d5f5'});
+ btn.style.borderColor='#956bc9';
+}
+
+function selectSchool(btn){
+ document.querySelectorAll('#setup button.choice')
+ .forEach(b=>{if(b.textContent.includes('lycée')||b.textContent.includes('école'))b.style.borderColor='#e4d5f5'});
+ btn.style.borderColor='#956bc9';
+}
+
+function cap(n,min,max){
+ return Math.max(min,Math.min(max,n));
+}
+
+function startGame(){
+
+ let families={
+  aisée:{money:100,energy:90},
+  modeste:{money:45,energy:80},
+  pauvre:{money:15,energy:70}
+ };
+
+ let schools={
+  petit:{avg:12,pop:45},
+  classique:{avg:10,pop:50},
+  réputé:{avg:9,pop:55},
+  prestigieux:{avg:8,pop:60}
+ };
+
+ s.money=families[family].money;
+ s.energy=families[family].energy;
+ s.avg=schools[school].avg;
+ s.pop=schools[school].pop;
+
+ document.getElementById("student").textContent=
+ names[Math.floor(Math.random()*names.length)];
+
+ document.getElementById("setup").classList.add("hidden");
+ document.getElementById("game").classList.remove("hidden");
+
+ updateStats();
+ nextEvent();
+}
+
+function updateStats(){
+ document.getElementById("pop").textContent=s.pop;
+ document.getElementById("avg").textContent=s.avg.toFixed(1);
+ document.getElementById("energy").textContent=s.energy;
+ document.getElementById("money").textContent=s.money+" €";
+ document.getElementById("year").textContent="Année "+s.year;
+ document.getElementById("day").textContent="Jour "+s.day;
+}
+
+const events=[
+
+{
+ category:"COURS",
+ title:"Un contrôle surprise !",
+ text:"Ton professeur annonce un contrôle pour demain. Que fais-tu ?",
+ choices:[
+ ["📖 Je révise toute la soirée",{avg:1.2,energy:-20}],
+ ["🙂 Je relis rapidement",{avg:0.5,energy:-8}],
+ ["🎮 Je ne révise pas",{energy:5}]
+ ]
+},
+
+{
+ category:"AMITIÉ",
+ title:"Un nouvel élève arrive",
+ text:"Un nouvel élève s'installe à côté de toi. Il cherche à se faire des amis.",
+ choices:[
+ ["💬 Je vais lui parler",{pop:12,energy:-4}],
+ ["👋 Je lui dis bonjour",{pop:5}],
+ ["😶 Je l'ignore",{pop:-3}]
+ ]
+},
+
+{
+ category:"VIE SCOLAIRE",
+ title:"Une mauvaise note...",
+ text:"Tu viens de recevoir un 6/20. Comment réagis-tu ?",
+ choices:[
+ ["📚 Je travaille davantage",{avg:1,energy:-15}],
+ ["🤷 Je laisse tomber",{avg:-0.5}],
+ ["👨‍🏫 Je demande de l'aide",{avg:0.7,energy:-7}]
+ ]
+},
+
+{
+ category:"ARGENT",
+ title:"Ton argent de poche",
+ text:"Tes parents te proposent de revoir ton argent de poche.",
+ choices:[
+ ["💰 Demander une augmentation",{money:15}],
+ ["🤝 Accepter comme avant",{money:5}],
+ ["🙂 Ne rien demander",{money:0}]
+ ]
+},
+
+{
+ category:"POPULARITÉ",
+ title:"Une fête est organisée",
+ text:"Tes camarades organisent une fête ce week-end.",
+ choices:[
+ ["🎉 J'y vais !",{pop:15,money:-15,energy:-10}],
+ ["😊 Je passe un petit moment",{pop:7,money:-5,energy:-4}],
+ ["🏠 Je reste chez moi",{energy:8}]
+ ]
+},
+
+{
+ category:"ÉTUDES",
+ title:"Un exposé en groupe",
+ text:"Le professeur vous demande de préparer un exposé.",
+ choices:[
+ ["⭐ Je prends la direction du groupe",{avg:0.8,pop:7,energy:-12}],
+ ["🤝 Je participe sérieusement",{avg:0.6,energy:-8}],
+ ["😴 Je laisse les autres faire",{avg:-0.5,pop:-3}]
+ ]
+},
+
+{
+ category:"VIE SCOLAIRE",
+ title:"Une dispute dans la cour",
+ text:"Deux camarades se disputent violemment devant toi.",
+ choices:[
+ ["🕊️ J'essaie de les calmer",{pop:8,energy:-5}],
+ ["👀 Je ne m'en mêle pas",{energy:0}],
+ ["📱 Je filme la scène",{pop:-8}]
+ ]
+},
+
+{
+ category:"SPORT",
+ title:"Une journée sportive",
+ text:"Le lycée organise une journée sportive.",
+ choices:[
+ ["🏃 Je participe à tout",{pop:10,energy:-20}],
+ ["⚽ Je participe un peu",{pop:5,energy:-10}],
+ ["🪑 Je reste sur le côté",{energy:5}]
+ ]
+},
+
+{
+ category:"PROFESSEUR",
+ title:"Le professeur te félicite",
+ text:"Ton professeur remarque tes efforts et te félicite devant la classe.",
+ choices:[
+ ["😎 Je remercie le professeur",{avg:0.5,pop:5}],
+ ["😊 Je reste modeste",{avg:0.5}],
+ ["🙄 Je fais comme si de rien n'était",{pop:-2}]
+ ]
+},
+
+{
+ category:"AMITIÉ",
+ title:"Tes amis sortent sans toi",
+ text:"Tu découvres que tes amis sont sortis sans te prévenir.",
+ choices:[
+ ["💬 Je leur demande pourquoi",{pop:2}],
+ ["😔 Je suis déçu et je m'isole",{pop:-5,energy:-5}],
+ ["🤝 Je propose une sortie prochaine",{pop:8,money:-5}]
+ ]
+},
+
+{
+ category:"EXAMEN",
+ title:"Les examens approchent",
+ text:"Les examens de fin de trimestre arrivent. Il faut te préparer.",
+ choices:[
+ ["📚 Je travaille énormément",{avg:1.5,energy:-25}],
+ ["📝 Je révise normalement",{avg:0.8,energy:-12}],
+ ["🎮 Je préfère me détendre",{energy:5,avg:-0.5}]
+ ]
+},
+
+{
+ category:"ARGENT",
+ title:"Une petite récompense",
+ text:"Ta famille te propose de te donner de l'argent pour tes efforts.",
+ choices:[
+ ["🥇 Je demande 20 €",{money:20}],
+ ["🙂 Je demande 10 €",{money:10}],
+ ["❤️ Je refuse",{pop:2}]
+ ]
+},
+
+{
+ category:"POPULARITÉ",
+ title:"Tu es invité à une sortie",
+ text:"Les élèves les plus populaires t'invitent à sortir.",
+ choices:[
+ ["🔥 J'accepte immédiatement",{pop:15,money:-20,energy:-10}],
+ ["🙂 J'accepte mais pas longtemps",{pop:8,money:-8,energy:-4}],
+ ["🏠 Je refuse poliment",{energy:5}]
+ ]
+},
+
+{
+ category:"ÉTUDES",
+ title:"Un devoir important",
+ text:"Tu dois rendre un devoir important lundi matin.",
+ choices:[
+ ["✍️ Je fais un excellent devoir",{avg:1,energy:-15}],
+ ["📄 Je fais le nécessaire",{avg:0.4,energy:-7}],
+ ["❌ Je ne le fais pas",{avg:-1}]
+ ]
+}
+
+];
+
+function nextEvent(){
+
+ if(s.day>30){
+  finish();
+  return;
+ }
+
+ updateStats();
+
+ let index=Math.floor(Math.random()*events.length);
+
+ if(index===previousEvent){
+  index=(index+1)%events.length;
+ }
+
+ previousEvent=index;
+ currentEvent=events[index];
+
+ document.getElementById("category").textContent=currentEvent.category;
+ document.getElementById("eventTitle").textContent=currentEvent.title;
+ document.getElementById("eventText").textContent=currentEvent.text;
+
+ document.getElementById("feedback").classList.add("hidden");
+ document.getElementById("continue").classList.add("hidden");
+
+ let area=document.getElementById("choices");
+ area.innerHTML="";
+
+ currentEvent.choices.forEach((choice,i)=>{
+  let btn=document.createElement("button");
+  btn.className="choice";
+  btn.textContent=choice[0];
+  btn.onclick=()=>choose(i);
+  area.appendChild(btn);
+ });
+}
+
+function choose(i){
+
+ let effects=currentEvent.choices[i][1];
+
+ for(let key in effects){
+  if(key==="avg"){
+   s.avg=cap(s.avg+effects[key],0,20);
+  }else if(key==="money"){
+   s.money=Math.max(0,s.money+effects[key]);
+  }else{
+   s[key]=cap(s[key]+effects[key],0,100);
+  }
+ }
+
+ document.querySelectorAll("#choices button").forEach(b=>{
+  b.disabled=true;
+ });
+
+ let messages=[];
+
+ if(effects.pop)messages.push("Popularité "+(effects.pop>0?"+":"")+effects.pop);
+ if(effects.avg)messages.push("Moyenne "+(effects.avg>0?"+":"")+effects.avg);
+ if(effects.energy)messages.push("Énergie "+(effects.energy>0?"+":"")+effects.energy);
+ if(effects.money)messages.push("Argent "+(effects.money>0?"+":"")+effects.money+" €");
+
+ document.getElementById("feedback").classList.remove("hidden");
+ document.getElementById("feedback").innerHTML=
+ "<b>Conséquences de ton choix</b><br>"+
+ (messages.length?messages.join("<br>"):"Aucun changement dans tes statistiques.");
+
+ document.getElementById("continue").classList.remove("hidden");
+
+ s.day++;
+
+ if(s.day===11||s.day===21){
+  s.year++;
+  s.energy=cap(s.energy+15,0,100);
+  s.money+=10;
+ }
+
+ updateStats();
+
+ if(s.energy===0){
+  s.avg=cap(s.avg-0.3,0,20);
+ }
+}
+
+function finish(){
+
+ document.getElementById("game").classList.add("hidden");
+ document.getElementById("ending").classList.remove("hidden");
+
+ let award="";
+
+ if(s.avg>=16)award="🏆 Mention très bien";
+ else if(s.avg>=14)award="🥇 Mention bien";
+ else if(s.avg>=12)award="🎖️ Mention assez bien";
+ else if(s.avg>=10)award="🎓 Diplôme obtenu";
+ else award="📚 Année à recommencer";
+
+ document.getElementById("award").textContent=award;
+
+ document.getElementById("finalText").innerHTML=
+ "Moyenne finale : <b>"+s.avg.toFixed(1)+"/20</b><br>"+
+ "Popularité : <b>"+s.pop+"/100</b><br>"+
+ "Argent de poche : <b>"+s.money+" €</b><br><br>"+
+ "Ton aventure scolaire est terminée !";
+}
+</script>
+</body>
+</html>
