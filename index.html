@@ -1,0 +1,335 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scolarity Eleven</title>
+<style>
+:root {
+  --blue:#5267f5; --purple:#9258ed; --pink:#f36da9;
+  --orange:#ffad50; --green:#36c99a; --dark:#252944;
+  --bg:#f3f4ff; --white:#fff;
+}
+* {box-sizing:border-box}
+body {
+  margin:0; font-family:Arial,sans-serif; background:var(--bg);
+  color:var(--dark);
+}
+header {
+  background:linear-gradient(120deg,var(--blue),var(--purple));
+  color:white; padding:22px 18px; border-radius:0 0 25px 25px;
+}
+header h1 {margin:0;font-size:27px}
+header p {margin:7px 0 0;opacity:.9}
+.container {max-width:900px;margin:auto;padding:16px}
+.profile {
+  background:white;border-radius:18px;padding:16px;
+  display:flex;align-items:center;gap:14px;
+  box-shadow:0 4px 15px #25294412;margin-top:15px;
+}
+.avatar {
+  width:65px;height:65px;border-radius:20px;
+  background:#ffe4a9;display:grid;place-items:center;font-size:35px;
+}
+.profile h2 {margin:0 0 5px}
+.small {font-size:13px;color:#777}
+.stats {
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:10px;margin:15px 0;
+}
+.stat,.panel {
+  background:white;border-radius:17px;padding:15px;
+  box-shadow:0 4px 15px #2529440c;
+}
+.stat strong {font-size:20px}
+.stat-title {font-size:13px;color:#777;margin-bottom:8px}
+.bar {height:9px;background:#ececf5;border-radius:20px;overflow:hidden;margin-top:8px}
+.fill {height:100%;border-radius:20px}
+nav {
+  display:flex;gap:8px;overflow-x:auto;padding:12px 0;
+}
+nav button {
+  border:0;border-radius:12px;padding:12px 15px;
+  background:white;color:var(--dark);font-weight:bold;white-space:nowrap;
+}
+nav button.active {background:var(--blue);color:white}
+.panel {margin:12px 0}
+.panel h2 {margin:0 0 12px;font-size:19px}
+.actions {
+  display:grid;grid-template-columns:repeat(2,1fr);gap:10px;
+}
+.action {
+  border:0;border-radius:14px;padding:15px;
+  font-size:15px;font-weight:bold;color:white;cursor:pointer;
+}
+.action:active {transform:scale(.97)}
+.blue {background:var(--blue)}
+.purple {background:var(--purple)}
+.pink {background:var(--pink)}
+.orange {background:var(--orange);color:#49300d}
+.green {background:var(--green);color:#123f32}
+.event {
+  background:#f0edff;border-radius:13px;padding:13px;
+  line-height:1.5;margin-top:10px;
+}
+.person {
+  display:flex;justify-content:space-between;align-items:center;
+  padding:12px 0;border-bottom:1px solid #eee;
+}
+.person:last-child {border:0}
+.tag {
+  background:#eeeaff;color:#6849c9;padding:5px 9px;
+  border-radius:20px;font-size:12px;
+}
+.hidden {display:none}
+footer {text-align:center;color:#999;font-size:12px;padding:25px}
+button {cursor:pointer}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>🎒 SCOLARITY ELEVEN</h1>
+  <p>Ta vie au collège commence ici !</p>
+</header>
+
+<main class="container">
+
+  <section class="profile">
+    <div class="avatar">😎</div>
+    <div>
+      <h2 id="studentName">Alex</h2>
+      <div>Élève de 6e B · 12 ans</div>
+      <div class="small" id="day">Jour 1 · Lundi</div>
+    </div>
+  </section>
+
+  <section class="stats">
+    <div class="stat">
+      <div class="stat-title">📚 Moyenne générale</div>
+      <strong id="average">12/20</strong>
+      <div class="bar"><div class="fill" id="averageBar" style="width:60%;background:var(--blue)"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">⚡ Énergie</div>
+      <strong id="energyText">80/100</strong>
+      <div class="bar"><div class="fill" id="energyBar" style="width:80%;background:var(--orange)"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">😊 Humeur</div>
+      <strong id="moodText">75/100</strong>
+      <div class="bar"><div class="fill" id="moodBar" style="width:75%;background:var(--pink)"></div></div>
+    </div>
+    <div class="stat">
+      <div class="stat-title">🤝 Popularité</div>
+      <strong id="popText">20/100</strong>
+      <div class="bar"><div class="fill" id="popBar" style="width:20%;background:var(--green)"></div></div>
+    </div>
+  </section>
+
+  <nav>
+    <button class="active" onclick="showPage('home',this)">🏠 Accueil</button>
+    <button onclick="showPage('school',this)">📚 École</button>
+    <button onclick="showPage('friends',this)">👥 Amis</button>
+    <button onclick="showPage('profile',this)">👤 Profil</button>
+    <button onclick="showPage('journal',this)">📖 Journal</button>
+  </nav>
+
+  <section id="home">
+    <div class="panel">
+      <h2>🌟 Que veux-tu faire ?</h2>
+      <p>Choisis une activité pour faire avancer ta journée.</p>
+      <div class="actions">
+        <button class="action blue" onclick="study()">📚 Réviser</button>
+        <button class="action purple" onclick="talk()">💬 Parler à quelqu'un</button>
+        <button class="action pink" onclick="play()">⚽ Jouer</button>
+        <button class="action green" onclick="rest()">😴 Se reposer</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h2>📢 Événement du jour</h2>
+      <div class="event" id="event">Bienvenue au collège ! Une nouvelle aventure commence. À toi de jouer !</div>
+    </div>
+    <div class="panel">
+      <h2>📅 Prochaine étape</h2>
+      <p id="nextStep">Découvre ton collège et fais connaissance avec les autres élèves.</p>
+      <button class="action orange" onclick="nextDay()">🌙 Passer au jour suivant</button>
+    </div>
+  </section>
+
+  <section id="school" class="hidden">
+    <div class="panel">
+      <h2>📚 Vie scolaire</h2>
+      <p>Travaille pour améliorer tes résultats !</p>
+      <div class="person"><span>Mathématiques</span><strong id="math">12/20</strong></div>
+      <div class="person"><span>Français</span><strong id="french">13/20</strong></div>
+      <div class="person"><span>Histoire-Géo</span><strong id="history">11/20</strong></div>
+      <div class="person"><span>Anglais</span><strong id="english">12/20</strong></div>
+      <div class="person"><span>SVT</span><strong id="science">12/20</strong></div>
+      <button class="action blue" onclick="study()">✏️ Faire ses devoirs</button>
+    </div>
+  </section>
+
+  <section id="friends" class="hidden">
+    <div class="panel">
+      <h2>👥 Tes camarades</h2>
+      <div class="person"><span>👧 Emma</span><span class="tag" id="emma">Connaissance</span></div>
+      <div class="person"><span>👦 Lucas</span><span class="tag" id="lucas">Connaissance</span></div>
+      <div class="person"><span>👧 Sarah</span><span class="tag" id="sarah">Connaissance</span></div>
+      <div class="person"><span>👦 Hugo</span><span class="tag" id="hugo">Connaissance</span></div>
+      <p class="small">Parle avec tes camarades pour développer tes relations.</p>
+      <button class="action purple" onclick="talk()">💬 Faire connaissance</button>
+    </div>
+  </section>
+
+  <section id="profile" class="hidden">
+    <div class="panel">
+      <h2>👤 Ton personnage</h2>
+      <p>Nom : <strong>Alex</strong></p>
+      <p>Âge : <strong>12 ans</strong></p>
+      <p>Classe : <strong>6e B</strong></p>
+      <p>Établissement : <strong>Collège Scolarity</strong></p>
+      <p>Année scolaire : <strong>2026-2027</strong></p>
+      <button class="action green" onclick="saveGame()">💾 Sauvegarder</button>
+      <button class="action orange" onclick="resetGame()">🔄 Recommencer</button>
+    </div>
+  </section>
+
+  <section id="journal" class="hidden">
+    <div class="panel">
+      <h2>📖 Ton journal</h2>
+      <div id="journalEntries">Ton histoire commence aujourd'hui !</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>Scolarity Eleven · Ta vie, tes choix, ton histoire 💜</footer>
+
+<script>
+let game = {
+  day:1, energy:80, mood:75, popularity:20,
+  grades:{math:12,french:13,history:11,english:12,science:12},
+  relations:{emma:10,lucas:10,sarah:10,hugo:10},
+  entries:["Jour 1 : Bienvenue au collège Scolarity !"]
+};
+
+function clamp(n){return Math.max(0,Math.min(100,n));}
+
+function average(){
+  let values=Object.values(game.grades);
+  return values.reduce((a,b)=>a+b,0)/values.length;
+}
+
+function update(){
+  document.getElementById("day").textContent="Jour "+game.day;
+  document.getElementById("energyText").textContent=game.energy+"/100";
+  document.getElementById("moodText").textContent=game.mood+"/100";
+  document.getElementById("popText").textContent=game.popularity+"/100";
+  document.getElementById("energyBar").style.width=game.energy+"%";
+  document.getElementById("moodBar").style.width=game.mood+"%";
+  document.getElementById("popBar").style.width=game.popularity+"%";
+  document.getElementById("average").textContent=average().toFixed(1)+"/20";
+  document.getElementById("averageBar").style.width=(average()*5)+"%";
+
+  for(let subject in game.grades){
+    document.getElementById(subject).textContent=game.grades[subject]+"/20";
+  }
+  for(let person in game.relations){
+    let score=game.relations[person];
+    let label=score>=70?"Meilleur ami 💜":score>=40?"Ami 😊":score>=20?"Copain 🙂":"Connaissance";
+    document.getElementById(person).textContent=label;
+  }
+  document.getElementById("journalEntries").innerHTML=
+    game.entries.slice().reverse().map(e=>"<div class='event'>"+e+"</div>").join("");
+  saveGame();
+}
+
+function showPage(page,button){
+  document.querySelectorAll("main section[id]").forEach(s=>s.classList.add("hidden"));
+  document.getElementById(page).classList.remove("hidden");
+  document.querySelectorAll("nav button").forEach(b=>b.classList.remove("active"));
+  button.classList.add("active");
+}
+
+function message(text){
+  document.getElementById("event").textContent=text;
+  game.entries.push("Jour "+game.day+" : "+text);
+  update();
+}
+
+function study(){
+  if(game.energy<10){message("Tu es trop fatigué pour travailler. Repose-toi !");return;}
+  game.energy=clamp(game.energy-12);
+  game.mood=clamp(game.mood-3);
+  let subjects=Object.keys(game.grades);
+  let subject=subjects[Math.floor(Math.random()*subjects.length)];
+  game.grades[subject]=Math.min(20,game.grades[subject]+1);
+  message("Tu as bien travaillé ! Ta note en "+subject+" progresse. Bravo !");
+}
+
+function talk(){
+  if(game.energy<5){message("Tu es trop fatigué pour discuter.");return;}
+  game.energy=clamp(game.energy-5);
+  game.mood=clamp(game.mood+7);
+  game.popularity=clamp(game.popularity+3);
+  let people=Object.keys(game.relations);
+  let person=people[Math.floor(Math.random()*people.length)];
+  game.relations[person]=clamp(game.relations[person]+15);
+  let names={emma:"Emma",lucas:"Lucas",sarah:"Sarah",hugo:"Hugo"};
+  message("Tu as discuté avec "+names[person]+". Vous commencez à mieux vous connaître !");
+}
+
+function play(){
+  if(game.energy<10){message("Tu n'as plus assez d'énergie pour jouer.");return;}
+  game.energy=clamp(game.energy-10);
+  game.mood=clamp(game.mood+15);
+  game.popularity=clamp(game.popularity+5);
+  message("Tu as passé un super moment avec les autres élèves dans la cour !");
+}
+
+function rest(){
+  game.energy=clamp(game.energy+25);
+  game.mood=clamp(game.mood+5);
+  message("Tu as pris du temps pour toi. Tu te sens beaucoup mieux !");
+}
+
+function nextDay(){
+  game.day++;
+  game.energy=clamp(game.energy+35);
+  game.mood=clamp(game.mood-2);
+  let events=[
+    "Un nouveau professeur arrive au collège. Tout le monde est curieux !",
+    "Une sortie scolaire est annoncée pour la semaine prochaine !",
+    "Tu croises tes camarades dans la cour. Une nouvelle journée commence.",
+    "Un contrôle surprise est annoncé. Il va falloir réviser !",
+    "La classe prépare un projet collectif. Tout le monde participe."
+  ];
+  document.getElementById("nextStep").textContent="Continue à progresser et à rencontrer des élèves.";
+  message(events[Math.floor(Math.random()*events.length)]);
+}
+
+function saveGame(){
+  try{localStorage.setItem("scolaritySave",JSON.stringify(game));}catch(e){}
+}
+
+function loadGame(){
+  try{
+    let saved=localStorage.getItem("scolaritySave");
+    if(saved) game=JSON.parse(saved);
+  }catch(e){}
+  update();
+}
+
+function resetGame(){
+  if(confirm("Veux-tu vraiment recommencer ton aventure ?")){
+    localStorage.removeItem("scolaritySave");
+    location.reload();
+  }
+}
+
+loadGame();
+</script>
+</body>
+</html>
