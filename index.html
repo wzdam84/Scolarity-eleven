@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scolarity Eleven</title>
+<style>
+:root{--bg:#eef2f7;--panel:#fff;--ink:#202b3c;--muted:#65748b;--line:#d9e1ec;--blue:#3978d6;--teal:#159b91;--gold:#d99a25;--purple:#8063c7;--red:#d65b68}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(145deg,#e8effa,#f7f8fc 48%,#e7f5f2);color:var(--ink);font-family:Arial,sans-serif}
+header{padding:24px 15px;text-align:center;background:#24344d;color:white;border-bottom:5px solid #58b8b0}
+h1{margin:0;font-size:27px;letter-spacing:3px}
+header p{margin:8px 0 0;color:#c9d8ed;font-size:12px;letter-spacing:2px}
+main{max-width:880px;margin:24px auto;padding:0 14px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 5px 18px #24344d0c}
+h2{font-size:20px;margin:0 0 12px}
+h3{font-size:15px;color:#34445d}
+p{line-height:1.55}
+.muted{color:var(--muted);font-size:13px}
+button{background:var(--blue);color:white;border:0;padding:12px 16px;border-radius:8px;font-weight:bold;cursor:pointer;margin:5px 5px 5px 0}
+button:hover{filter:brightness(.94)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.secondary{background:#e8edf5;color:#34445d}
+.origins{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:10px}
+.origin{background:#f7f9fd;border:2px solid var(--line);padding:14px;border-radius:10px;cursor:pointer;text-align:left;color:var(--ink)}
+.origin strong{display:block;margin-bottom:7px}
+.origin.selected{border-color:var(--teal);background:#eaf8f6;box-shadow:0 0 0 2px #159b9120}
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.stat{background:#f5f7fb;padding:11px;border-radius:9px;border:1px solid #e8edf4}
+.statline{display:flex;justify-content:space-between;gap:8px;font-size:13px;margin-bottom:7px}
+.bar{height:8px;background:#e1e7f0;border-radius:8px;overflow:hidden}
+.fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--teal));border-radius:8px}
+.profile{display:flex;align-items:center;gap:18px;flex-wrap:wrap}
+.avatar{width:100px;height:115px;background:#eaf0f8;border-radius:12px;display:flex;align-items:center;justify-content:center;border:1px solid var(--line)}
+.avatar svg{width:90px;height:105px}
+.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#e9f1ff;color:#3266b0;font-size:11px;font-weight:bold}
+.choices{display:grid;gap:9px}
+.choices button{text-align:left;background:#f0f4fa;color:#26364c;border:1px solid #d9e2ef;font-weight:normal;margin:0}
+.choices button:hover{background:#e4efff;border-color:#8eafe0}
+.result{border-left:4px solid var(--teal);padding:10px 13px;background:#eef9f7;margin:12px 0;border-radius:0 8px 8px 0}
+.good{color:#16836f}
+.bad{color:#c04d5b}
+.log{max-height:220px;overflow:auto;font-size:13px;color:var(--muted)}
+.log p{border-bottom:1px solid #edf0f5;padding-bottom:7px}
+.hidden{display:none}
+footer{text-align:center;color:#738198;font-size:12px;padding:22px}
+@media(max-width:520px){
+.stats{grid-template-columns:1fr}
+.panel{padding:16px}
+h1{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+<header>
+<h1>SCOLARITY ELEVEN</h1>
+<p>UNE VIE SCOLAIRE. MILLE DESTINS.</p>
+</header>
+
+<main>
+
+<section id="intro" class="panel">
+<h2>Bienvenue dans Scolarity Eleven</h2>
+<p>Chaque carrière raconte une nouvelle histoire. Tes choix influencent tes notes, tes relations, ton moral et ton avenir. Une carrière commence à 12 ans et se déroule sur 20 journées.</p>
+<h3>Choisis ton origine</h3>
+<div class="origins" id="origins"></div>
+<p class="muted">Ton origine influence ton départ, mais ne décide pas de toute ta vie.</p>
+<button id="start" type="button" disabled>Commencer ma carrière</button>
+<div id="startError" class="muted" role="status"></div>
+</section>
+
+<section id="game" class="hidden">
+<div class="panel">
+<div class="profile">
+<div class="avatar" id="avatar"></div>
+<div>
+<span class="tag">ÉLÈVE · 12 ANS · 6e</span>
+<h2 id="studentName"></h2>
+<div class="muted" id="originLabel"></div>
+<div class="muted" id="dayLabel"></div>
+</div>
+</div>
+</div>
+
+<div class="panel">
+<h2>Situation personnelle</h2>
+<div class="stats" id="stats"></div>
+</div>
+
+<div class="panel" id="eventPanel">
+<div class="tag" id="eventCategory">ÉVÉNEMENT</div>
+<h2 id="eventTitle" style="margin-top:12px"></h2>
+<p id="eventText"></p>
+<div class="choices" id="choices"></div>
+<div id="result"></div>
+</div>
+
+<div class="panel">
+<h3>Journal de carrière</h3>
+<div class="log" id="journal"></div>
+</div>
+</section>
+
+<section id="ending" class="panel hidden">
+<h2>Fin de ta carrière</h2>
+<div id="endingText"></div>
+<button id="restart" type="button">Recommencer une nouvelle carrière</button>
+</section>
+
+</main>
+
+<footer>SCOLARITY ELEVEN · SIMULATION DE VIE SCOLAIRE</footer>
+
+<script>
+"use strict";
+
+const origins=[
+{name:"Famille aisée",desc:"Un environnement confortable et des moyens importants.",stats:{moyenne:2,moral:5,energie:0,popularite:0,ami:1,prof:0,famille:3,argent:8}},
+{name:"École réputée",desc:"Un établissement exigeant où les résultats comptent.",stats:{moyenne:5,moral:-2,energie:-2,popularite:0,ami:0,prof:3,famille:1,argent:2}},
+{name:"Établissement classique",desc:"Un départ assez équilibré.",stats:{moyenne:0,moral:0,energie:0,popularite:0,ami:0,prof:0,famille:0,argent:3}},
+{name:"Établissement défavorisé",desc:"Un environnement difficile, avec des occasions de progresser.",stats:{moyenne:-2,moral:-2,energie:-1,popularite:1,ami:1,prof:-1,famille:0,argent:1}},
+{name:"Famille modeste",desc:"Des moyens limités, mais un soutien familial possible.",stats:{moyenne:0,moral:1,energie:0,popularite:0,ami:0,prof:0,famille:3,argent:1}}
+];
+
+const firstNames=["Adam","Lucas","Noah","Hugo","Nathan","Enzo","Léo","Mathis","Gabriel","Ethan","Jules","Louis","Inès","Emma","Jade","Lina","Chloé","Sarah","Manon","Léa","Camille","Yasmine","Maya","Zoé","Nina","Mila","Aya","Louna"];
+
+const lastNames=["Martin","Bernard","Dubois","Thomas","Robert","Richard","Petit","Durand","Leroy","Moreau","Simon","Laurent","Michel","Garcia","David","Bertrand","Roux","Vincent","Fournier","Morel","Girard","André","Lefebvre","Mercier"];
+
+const events=[
+{cat:"Vie scolaire",title:"Un contrôle surprise",text:"Ton professeur annonce un contrôle que personne n'avait prévu. Comment réagis-tu ?",choices:[["Tu essaies de répondre sérieusement.",{moyenne:[2,5],energie:[-2,-5],prof:[1,3]}],["Tu réponds au hasard.",{moyenne:[-5,-1],prof:[-3,-1]}],["Tu demandes quelques minutes pour réviser.",{moyenne:[-1,3],prof:[-1,2],moral:[-2,2]}]]},
+
+{cat:"Amitié",title:"Un nouvel élève arrive",text:"Un nouvel élève arrive dans ta classe et semble un peu perdu.",choices:[["Tu vas lui parler.",{ami:[2,6],popularite:[1,3],moral:[1,3]}],["Tu restes avec tes amis habituels.",{ami:[-1,1],popularite:[-1,1]}],["Tu te moques de lui avec les autres.",{popularite:[-2,4],ami:[-4,1],moral:[-2,1]}]]},
+
+{cat:"Famille",title:"Une discussion à la maison",text:"Ta famille te demande comment se passe ton année scolaire.",choices:[["Tu racontes honnêtement ta journée.",{famille:[2,5],moral:[1,3]}],["Tu dis que tout va bien.",{famille:[-2,1],moral:[-2,1]}],["Tu demandes de l'aide pour tes devoirs.",{famille:[1,5],moyenne:[1,3],energie:[-1,1]}]]},
+
+{cat:"Vie scolaire",title:"Un devoir oublié",text:"Tu réalises que tu as oublié un devoir important.",choices:[["Tu reconnais ton oubli.",{prof:[1,4],moral:[-2,1],moyenne:[-2,1]}],["Tu inventes une excuse.",{prof:[-5,1],moral:[-2,2]}],["Tu demandes de l'aide à un camarade.",{ami:[1,3],moyenne:[-1,3],energie:[-2,1]}]]},
+
+{cat:"Temps libre",title:"Une invitation",text:"Des camarades te proposent de sortir après les cours.",choices:[["Tu acceptes de sortir.",{ami:[2,5],popularite:[1,4],energie:[-3,1],moral:[1,4]}],["Tu rentres travailler.",{moyenne:[1,4],energie:[-2,1],ami:[-1,1]}],["Tu rentres te reposer.",{moral:[-2,2],famille:[1,2],energie:[0,2]}]]},
+
+{cat:"Vie scolaire",title:"Une remarque du professeur",text:"Un professeur te fait une remarque devant toute la classe.",choices:[["Tu restes calme.",{prof:[1,4],moral:[-1,2]}],["Tu réponds sèchement.",{prof:[-5,-2],popularite:[-1,3],moral:[-2,2]}],["Tu expliques ton point de vue poliment.",{prof:[-1,4],moral:[0,3]}]]},
+
+{cat:"Amitié",title:"Une dispute entre amis",text:"Deux camarades se disputent et te demandent de prendre parti.",choices:[["Tu essaies de les réconcilier.",{ami:[1,5],moral:[1,3],popularite:[0,2]}],["Tu prends le parti de ton meilleur ami.",{ami:[-2,5],popularite:[-2,3]}],["Tu ne veux pas t'en mêler.",{ami:[-2,1],moral:[-1,2]}]]},
+
+{cat:"Études",title:"Une séance de révision",text:"Tu as du temps libre avant une évaluation importante.",choices:[["Tu révises sérieusement.",{moyenne:[2,5],energie:[-4,-1],moral:[-1,2]}],["Tu révises avec un camarade.",{moyenne:[1,4],ami:[1,3],energie:[-2,1]}],["Tu préfères te reposer.",{energie:[2,5],moyenne:[-2,1],moral:[1,3]}]]},
+
+{cat:"Vie quotidienne",title:"Un objet perdu",text:"Tu retrouves un objet qui appartient à un autre élève.",choices:[["Tu le rapportes à la vie scolaire.",{prof:[1,3],moral:[1,2],popularite:[0,2]}],["Tu cherches son propriétaire.",{ami:[1,3],popularite:[1,3]}],["Tu le gardes.",{moral:[-4,-1],popularite:[-2,2],prof:[-4,0]}]]},
+
+{cat:"Temps libre",title:"Une activité extrascolaire",text:"Une activité est proposée après les cours.",choices:[["Tu t'inscris.",{moral:[1,4],ami:[1,3],energie:[-3,0]}],["Tu rentres chez toi.",{energie:[1,3],famille:[0,2]}],["Tu essaies une séance.",{moral:[0,3],ami:[0,3],energie:[-2,0]}]]},
+
+{cat:"Vie scolaire",title:"Un exposé en groupe",text:"Tu dois préparer un exposé avec plusieurs élèves.",choices:[["Tu prends les choses en main.",{moyenne:[1,4],prof:[1,3],energie:[-3,-1]}],["Tu répartis le travail.",{ami:[1,4],moyenne:[0,4]}],["Tu laisses les autres décider.",{moyenne:[-3,2],ami:[-2,2],energie:[0,2]}]]},
+
+{cat:"Amitié",title:"Une rumeur circule",text:"Une rumeur désagréable circule sur un élève.",choices:[["Tu refuses de la répandre.",{moral:[1,3],ami:[0,2],popularite:[-1,2]}],["Tu demandes si elle est vraie.",{ami:[-1,2],popularite:[-1,1]}],["Tu la racontes à d'autres élèves.",{popularite:[-2,4],ami:[-4,0],moral:[-3,0]}]]},
+
+{cat:"Famille",title:"Une responsabilité à la maison",text:"On te demande de participer davantage aux tâches de la maison.",choices:[["Tu aides sans discuter.",{famille:[2,5],energie:[-2,0]}],["Tu proposes de t'organiser autrement.",{famille:[0,4],moral:[0,2]}],["Tu refuses car tu as trop de devoirs.",{famille:[-4,0],moyenne:[0,2]}]]},
+
+{cat:"Études",title:"Une mauvaise note",text:"Tu reçois une note décevante dans une matière importante.",choices:[["Tu demandes comment progresser.",{moyenne:[1,4],prof:[1,3],moral:[-1,2]}],["Tu te décourages.",{moral:[-5,-2],energie:[-2,0]}],["Tu travailles davantage seul.",{moyenne:[0,5],energie:[-4,-1]}]]},
+
+{cat:"Vie quotidienne",title:"Un camarade a besoin d'aide",text:"Un élève a du mal à comprendre un exercice.",choices:[["Tu prends le temps de l'aider.",{ami:[2,4],moral:[1,3],energie:[-2,0]}],["Tu lui expliques rapidement.",{ami:[0,3],energie:[-1,0]}],["Tu continues ton travail.",{moyenne:[0,2],ami:[-2,0]}]]},
+
+{cat:"Vie scolaire",title:"Une journée fatigante",text:"Tu as mal dormi et tu as du mal à te concentrer.",choices:[["Tu fais de ton mieux.",{moyenne:[0,3],energie:[-3,-1],prof:[0,2]}],["Tu demandes à te reposer.",{energie:[1,3],prof:[-1,2]}],["Tu décroches complètement.",{moyenne:[-4,-1],energie:[-1,1],prof:[-3,0]}]]},
+
+{cat:"Amitié",title:"Une fête d'anniversaire",text:"Un camarade organise une fête et t'invite.",choices:[["Tu participes.",{ami:[2,5],popularite:[1,4],argent:[-3,-1],moral:[1,4]}],["Tu offres un petit cadeau.",{ami:[1,3],argent:[-1,-3],moral:[0,2]}],["Tu déclines l'invitation.",{ami:[-2,1],argent:[0,2],energie:[1,2]}]]},
+
+{cat:"Études",title:"Un livre à lire",text:"Ton professeur recommande un livre pour progresser.",choices:[["Tu le lis entièrement.",{moyenne:[1,4],energie:[-2,0],prof:[1,2]}],["Tu lis seulement le résumé.",{moyenne:[-1,2],energie:[0,2]}],["Tu ne le lis pas.",{moyenne:[-3,0],prof:[-2,0]}]]},
+
+{cat:"Vie scolaire",title:"Représenter la classe",text:"La classe cherche un élève pour participer à un projet.",choices:[["Tu te portes volontaire.",{popularite:[1,4],prof:[1,3],energie:[-3,-1]}],["Tu proposes un camarade.",{ami:[1,3],popularite:[0,2]}],["Tu restes discret.",{energie:[1,2],popularite:[-1,1]}]]},
+
+{cat:"Bilan",title:"Une dernière décision",text:"La fin de cette période approche. Tu peux faire un effort ou prendre du temps pour toi.",choices:[["Tu travailles tes résultats.",{moyenne:[1,4],energie:[-3,-1]}],["Tu passes du temps avec tes proches.",{famille:[1,4],moral:[1,3],moyenne:[-1,1]}],["Tu prends du repos.",{energie:[2,5],moral:[1,3]}]]}
+];
+
+let selectedOrigin=null,student=null,day=1,eventIndex=0,usedEvents=[],pending=[],busy=false;
+
+const $=id=>document.getElementById(id);
+const clamp=n=>Math.max(0,Math.min(100,n));
+const random=(a,b)=>Math.floor(Math.random()*(b-a+1))+a;
+const pick=a=>a[Math.floor(Math.random()*a.length)];
+
+const labels={
+moyenne:"Moyenne",
+moral:"Moral",
+energie:"Énergie",
+popularite:"Popularité",
+ami:"Amitié",
+prof:"Relation professeurs",
+famille:"Relation famille",
+argent:"Argent"
+};
+
+function renderOrigins(){
+ const el=$("origins");
+ origins.forEach((o,i)=>{
+  const b=document.createElement("button");
+  b.type="button";
+  b.className="origin";
+
+  const strong=document.createElement("strong");
+  strong.textContent=o.name;
+
+  const desc=document.createElement("span");
+  desc.className="muted";
+  desc.textContent=o.desc;
+
+  b.append(strong,desc);
+
+  b.addEventListener("click",()=>{
+   selectedOrigin=i;
+   el.querySelectorAll(".origin").forEach(x=>x.classList.remove("selected"));
+   b.classList.add("selected");
+   $("start").disabled=false;
+   $("startError").textContent="";
+  });
+
+  el.appendChild(b);
+ });
+}
+
+function makeAvatar(){
+ const skin=pick(["#d9ae8c","#b98261","#f0c7a4","#9b684f","#e5b995"]);
+ const hair=pick(["#29211f","#171717","#493326","#765239","#b2a078"]);
+ const shirt=pick(["#3978d6","#159b91","#8063c7","#d99a25","#d65b68"]);
+
+ return `<svg viewBox="0 0 100 115" xmlns="http://www.w3.org/2000/svg">
+ <path d="M20 110 Q20 75 50 75 Q80 75 80 110" fill="${shirt}"/>
+ <rect x="43" y="67" width="14" height="17" fill="${skin}"/>
+ <ellipse cx="50" cy="43" rx="27" ry="32" fill="${skin}"/>
+ <path d="M23 43 Q18 7 52 9 Q83 10 77 47 Q68 24 51 25 Q34 26 23 43" fill="${hair}"/>
+ <circle cx="40" cy="46" r="2.5" fill="#222"/>
+ <circle cx="60" cy="46" r="2.5" fill="#222"/>
+ <path d="M43 60 Q50 65 57 60" fill="none" stroke="#754b3c" stroke-width="2"/>
+ </svg>`;
+}
+
+function startCareer(){
+ try{
+  if(selectedOrigin===null){
+   $("startError").textContent="Choisis d'abord une origine scolaire.";
+   return;
+  }
+
+  const o=origins[selectedOrigin],s=o.stats;
+
+  student={
+   name:pick(firstNames)+" "+pick(lastNames),
+   origin:o.name,
+   moyenne:clamp(50+s.moyenne*5),
+   moral:clamp(65+s.moral*5),
+   energie:clamp(75+s.energie*5),
+   popularite:clamp(40+s.popularite*5),
+   ami:clamp(45+s.ami*5),
+   prof:clamp(45+s.prof*5),
+   famille:clamp(55+s.famille*5),
+   argent:Math.max(0,10+s.argent*3)
+  };
+
+  day=1;
+  eventIndex=0;
+  usedEvents=[];
+  pending=[];
+  busy=false;
+
+  $("intro").classList.add("hidden");
+  $("ending").classList.add("hidden");
+  $("game").classList.remove("hidden");
+
+  $("avatar").innerHTML=makeAvatar();
+  $("studentName").textContent=student.name;
+  $("originLabel").textContent="Origine : "+student.origin;
+
+  $("journal").innerHTML="";
+  addLog("Début de carrière. "+student.name+" entre en 6e.");
+  updateStats();
+  showEvent();
+
+ }catch(err){
+  $("startError").textContent="Oups, une erreur a empêché le lancement. Recharge la page et réessaie.";
+  console.error(err);
+ }
+}
+
+function updateStats(){
+ const data=[
+ ["Moyenne",student.moyenne],
+ ["Moral",student.moral],
+ ["Énergie",student.energie],
+ ["Popularité",student.popularite],
+ ["Amitié",student.ami],
+ ["Relation professeurs",student.prof],
+ ["Relation famille",student.famille],
+ ["Argent de poche",student.argent]
+ ];
+
+ $("stats").innerHTML=data.map(([n,v])=>
+ `<div class="stat">
+ <div class="statline">
+ <span>${n}</span>
+ <strong>${v}${n==="Argent de poche"?" €":"/100"}</strong>
+ </div>
+ ${n!=="Argent de poche"?`<div class="bar"><div class="fill" style="width:${v}%"></div></div>`:""}
+ </div>`
+ ).join("");
+
+ $("dayLabel").textContent="Journée "+day+" / 20";
+}
+
+function showEvent(){
+ if(eventIndex>=20){
+  finishCareer();
+  return;
+ }
+
+ if(usedEvents.length===events.length)usedEvents=[];
+
+ const available=events.map((e,i)=>i).filter(i=>!usedEvents.includes(i));
+ const index=pick(available);
+ const e=events[index];
+
+ usedEvents.push(index);
+
+ $("eventCategory").textContent=e.cat.toUpperCase();
+ $("eventTitle").textContent=e.title;
+ $("eventText").textContent=e.text;
+ $("result").innerHTML="";
+ $("choices").innerHTML="";
+
+ e.choices.forEach(([label,effects])=>{
+  const b=document.createElement("button");
+  b.type="button";
+  b.textContent=label;
+  b.addEventListener("click",()=>choose(effects,label));
+  $("choices").appendChild(b);
+ });
+}
+
+function choose(effects,choice){
+ if(busy)return;
+ busy=true;
+
+ $("choices").querySelectorAll("button").forEach(b=>b.disabled=true);
+
+ const gains=[],losses=[];
+
+ Object.entries(effects).forEach(([key,range])=>{
+  const before=student[key];
+  const amount=random(Math.min(...range),Math.max(...range));
+
+  student[key]=key==="argent"
+   ?Math.max(0,before+amount)
+   :clamp(before+amount);
+
+  const diff=student[key]-before;
+
+  if(diff>0)gains.push(labels[key]+" : +"+diff+(key==="argent"?" €":""));
+  if(diff<0)losses.push(labels[key]+" : "+diff+(key==="argent"?" €":""));
+ });
+
+ if(Math.random()<.28){
+  const key=pick(Object.keys(effects));
+  pending.push({day:day+random(1,3),key,delta:random(-5,5)});
+ }
+
+ student.energie=clamp(student.energie-2);
+
+ let html=`<div class="result"><strong>Conséquences de ton choix</strong><p>${choice}</p>`;
+
+ if(gains.length)html+=`<p class="good">Gains : ${gains.join(" · ")}</p>`;
+ if(losses.length)html+=`<p class="bad">Pertes : ${losses.join(" · ")}</p>`;
+ if(!gains.length&&!losses.length)html+="<p>Aucun changement immédiat.</p>";
+
+ $("result").innerHTML=html+"</div>";
+
+ addLog(choice+" — "+[...gains,...losses].join(", "));
+ updateStats();
+
+ window.setTimeout(()=>{
+  day++;
+  eventIndex++;
+  applyPending();
+
+  if(day>20){
+   finishCareer();
+   return;
+  }
+
+  busy=false;
+  updateStats();
+  showEvent();
+
+ },1100);
+}
+
+function applyPending(){
+ const keep=[];
+
+ pending.forEach(p=>{
+  if(p.day<=day){
+   const before=student[p.key];
+
+   student[p.key]=p.key==="argent"
+    ?Math.max(0,before+p.delta)
+    :clamp(before+p.delta);
+
+   const d=student[p.key]-before;
+
+   if(d)addLog("Conséquence différée : "+labels[p.key]+" "+(d>0?"+":"")+d+(p.key==="argent"?" €":"")+".");
+  }else{
+   keep.push(p);
+  }
+ });
+
+ pending=keep;
+}
+
+function addLog(message){
+ const p=document.createElement("p");
+ p.textContent="Jour "+day+" — "+message;
+ $("journal").prepend(p);
+}
+
+function finishCareer(){
+ busy=false;
+ $("game").classList.add("hidden");
+ $("ending").classList.remove("hidden");
+
+ const s=student;
+
+ const bilan=s.moyenne>=75
+  ?"Tes résultats sont excellents."
+  :s.moyenne>=55
+  ?"Tes résultats sont plutôt satisfaisants."
+  :"Tes résultats scolaires sont difficiles.";
+
+ const moral=s.moral>=70
+  ?"Tu termines cette période avec un bon moral."
+  :s.moral>=40
+  ?"Ton moral est assez mitigé."
+  :"Cette période a été éprouvante.";
+
+ $("endingText").innerHTML=`
+ <div class="profile">
+ <div class="avatar">${$("avatar").innerHTML}</div>
+ <div>
+ <h3>${s.name}</h3>
+ <p class="muted">${s.origin}</p>
+ </div>
+ </div>
+
+ <p>Tu as terminé tes 20 journées de carrière.</p>
+ <p>${bilan} ${moral}</p>
+
+ <div class="stats">
+ ${[["Moyenne",s.moyenne],["Moral",s.moral],["Popularité",s.popularite],["Énergie",s.energie],["Amitié",s.ami],["Relation famille",s.famille]].map(([n,v])=>`<div class="stat">${n} : <strong>${
