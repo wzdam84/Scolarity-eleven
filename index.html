@@ -1,0 +1,265 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scolarity Eleven V7</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(135deg,#f6efff,#fff1f8);color:#38294d;font:19px system-ui,sans-serif}
+main{max-width:820px;margin:auto;padding:18px}
+header{text-align:center;padding:15px}
+h1{font-size:clamp(34px,8vw,48px);color:#8058b5;margin:5px}
+h2{font-size:26px;margin:4px 0 14px}
+.panel{background:white;border:2px solid #eadcf7;border-radius:22px;padding:19px;margin:14px 0;box-shadow:0 7px 22px #7650a411}
+button{font:700 18px system-ui;border:0;border-radius:15px;padding:16px;background:#9068c8;color:white;width:100%;margin:5px 0;cursor:pointer}
+.choice{background:#faf6ff;color:#49365f;border:2px solid #eadcf7;text-align:left;min-height:76px}
+.choice.selected{border-color:#9068c8;background:#f0e6ff}
+small{display:block;color:#766888;font-weight:500}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.stat{background:#faf6ff;border-radius:14px;padding:12px 5px;text-align:center}
+.stat b{display:block;color:#8058b5;font-size:25px}
+.stat span{font-size:14px;color:#766888}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.actions button{background:#eee5fa;color:#594176;min-height:72px}
+.pill{display:inline-block;background:#f2e8fb;color:#694a91;border-radius:30px;padding:6px 12px;font-size:14px;font-weight:700}
+.muted{color:#766888}
+.event{font-size:22px;font-weight:750}
+.hidden{display:none}
+.result{text-align:center}
+@media(max-width:520px){
+.stats{grid-template-columns:repeat(2,1fr)}
+.actions{grid-template-columns:1fr}
+body{font-size:18px}
+.panel{padding:15px}
+}
+</style>
+</head>
+<body>
+<main>
+<header>
+<span class="pill">JEU DE VIE SCOLAIRE</span>
+<h1>🌷 Scolarity Eleven</h1>
+<p class="muted">Ta vie scolaire. Tes choix. Ton histoire.</p>
+</header>
+
+<section id="setup" class="panel">
+<h2>1. Ta famille</h2>
+<div class="grid" id="families">
+<button class="choice selected" data-family="aisée">💎 Famille aisée<small>Plus d'argent au départ</small></button>
+<button class="choice" data-family="modeste">🏡 Famille modeste<small>Un départ équilibré</small></button>
+<button class="choice" data-family="pauvre">🌱 Famille pauvre<small>Un défi supplémentaire</small></button>
+</div>
+
+<h2 style="margin-top:22px">2. Ton établissement</h2>
+<div class="grid" id="schools">
+<button class="choice" data-school="modeste">🏫 Petit lycée<small>Moins de pression</small></button>
+<button class="choice selected" data-school="classique">📚 Lycée classique<small>Un bon équilibre</small></button>
+<button class="choice" data-school="réputé">✨ Lycée réputé<small>Plus exigeant</small></button>
+<button class="choice" data-school="prestigieux">👑 Grande école<small>Très exigeante</small></button>
+</div>
+<button id="start">Commencer ma carrière</button>
+</section>
+
+<section id="game" class="hidden">
+<div class="panel">
+<span class="pill" id="career">Année 1 · Trimestre 1</span>
+<h2 id="student">Ton personnage</h2>
+<div class="stats">
+<div class="stat"><b id="pop">50</b><span>Popularité</span></div>
+<div class="stat"><b id="avg">10</b><span>Moyenne</span></div>
+<div class="stat"><b id="energy">80</b><span>Énergie</span></div>
+<div class="stat"><b id="money">30 €</b><span>Argent</span></div>
+</div>
+</div>
+
+<div class="panel">
+<h2>À toi de jouer !</h2>
+<p class="event" id="title">Une nouvelle année commence !</p>
+<p id="desc" class="muted">Choisis tes activités.</p>
+<div class="actions">
+<button data-act="study">📖 Réviser</button>
+<button data-act="test">📝 Préparer un contrôle</button>
+<button data-act="friends">💬 Voir tes amis</button>
+<button data-act="outing">🎡 Faire une sortie</button>
+</div>
+<button id="next">Passer au trimestre suivant →</button>
+</div>
+
+<div id="result" class="panel result hidden"></div>
+</section>
+</main>
+
+<script>
+const $=x=>document.getElementById(x);
+let family='aisée',school='classique',s={};
+
+const names=[
+'Lina Moreau','Noah Petit','Inès Laurent',
+'Adam Bernard','Jade Robert','Léo Michel',
+'Maya Simon','Ethan Garcia'
+];
+
+function choose(group,key){
+$(group).addEventListener('click',e=>{
+let b=e.target.closest('button[data-'+key+']');
+if(!b)return;
+window[key]=b.dataset[key];
+$(group).querySelectorAll('button').forEach(x=>
+x.classList.toggle('selected',x===b));
+});
+}
+
+choose('families','family');
+choose('schools','school');
+
+function cap(n,a=0,b=100){
+return Math.max(a,Math.min(b,n));
+}
+
+function say(t,d){
+$('title').textContent=t;
+$('desc').textContent=d;
+}
+
+function draw(){
+$('pop').textContent=s.pop;
+$('avg').textContent=s.avg.toFixed(1);
+$('energy').textContent=s.energy;
+$('money').textContent=s.money+' €';
+$('career').textContent=`Année ${s.year} · Trimestre ${s.term}`;
+}
+
+$('start').onclick=()=>{
+let f={
+aisée:[90,85],
+modeste:[40,80],
+pauvre:[15,75]
+}[family];
+
+let d={
+modeste:[11,48],
+classique:[10,50],
+réputé:[9,52],
+prestigieux:[8,55]
+}[school];
+
+s={
+money:f[0],
+energy:f[1],
+avg:d[0],
+pop:d[1],
+term:1,
+year:1,
+done:false
+};
+
+$('student').textContent=
+names[Math.floor(Math.random()*names.length)];
+
+$('setup').classList.add('hidden');
+$('game').classList.remove('hidden');
+
+draw();
+say('Bienvenue !','Ton parcours commence. Fais tes choix !');
+};
+
+document.querySelectorAll('[data-act]').forEach(b=>{
+b.onclick=()=>{
+if(s.done)return;
+
+switch(b.dataset.act){
+
+case 'study':
+s.avg=cap(s.avg+.5,0,20);
+s.energy=cap(s.energy-15);
+say('Bonne séance 📖',
+'Ta moyenne progresse. Tu dépenses de l’énergie.');
+break;
+
+case 'test':
+s.avg=cap(s.avg+1,0,20);
+s.energy=cap(s.energy-22);
+say('Contrôle préparé 📝',
+'Tes efforts améliorent tes résultats.');
+break;
+
+case 'friends':
+s.pop=cap(s.pop+8);
+s.energy=cap(s.energy-7);
+say('Un bon moment 💬',
+'Tu gagnes en popularité.');
+break;
+
+case 'outing':
+if(s.money<15){
+say('Sortie impossible',
+'Il te faut 15 € pour sortir.');
+}else{
+s.money-=15;
+s.pop=cap(s.pop+12);
+s.energy=cap(s.energy-12);
+say('Super sortie ! 🎡',
+'Tu dépenses 15 € et gagnes en popularité.');
+}
+break;
+}
+
+draw();
+};
+});
+
+$('next').onclick=()=>{
+if(s.done)return;
+
+s.term++;
+s.energy=cap(s.energy+20);
+
+if(s.term>3){
+s.term=1;
+s.year++;
+}
+
+if(s.energy<20){
+s.avg=cap(s.avg-.4,0,20);
+say('Tu es épuisé·e',
+'Le manque de repos pèse sur tes résultats.');
+}else{
+say('Nouveau trimestre !',
+'Tu récupères de l’énergie. Continue tes efforts.');
+}
+
+draw();
+
+if(s.year>3)finish();
+};
+
+function finish(){
+s.done=true;
+$('next').disabled=true;
+
+document.querySelectorAll('[data-act]').forEach(b=>{
+b.disabled=true;
+});
+
+let award=s.avg>=16?'🏆 Mention très bien':
+s.avg>=14?'🥇 Mention bien':
+s.avg>=12?'🎖️ Mention assez bien':
+s.avg>=10?'🎓 Diplôme obtenu':
+'Parcours difficile';
+
+$('result').classList.remove('hidden');
+
+$('result').innerHTML=`
+<h2>Fin de ta carrière !</h2>
+<p class="event">${award}</p>
+<p>Moyenne finale : <b>${s.avg.toFixed(1)}/20</b></p>
+<p>Popularité : <b>${s.pop}/100</b></p>
+<button onclick="location.reload()">Nouvelle carrière</button>
+`;
+}
+</script>
+</body>
+</html>
